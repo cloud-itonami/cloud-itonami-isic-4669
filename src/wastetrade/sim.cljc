@@ -1,0 +1,121 @@
+(ns wastetrade.sim
+  "Demo driver -- `clojure -M:dev:run`. Walks a clean hazardous-waste
+  order through intake -> consent verification -> waste/scrap dispatch
+  (escalate/approve/commit) -> invoice settlement (escalate/approve/
+  commit), then shows a NON-hazardous / green-list waste order that does
+  NOT require prior informed consent (proving the check is genuinely
+  type-gated, not a blanket requirement), a hazardous-waste order WITHOUT
+  documented consent (HARD hold, the domain-defining check), and every
+  other HARD-hold failure mode in isolation, one waste-order per
+  scenario.
+
+  Like every sibling actor's domain checks, this actor's checks
+  (`credit-uncleared`, `contract-missing`,
+  `prior-informed-consent-missing`,
+  `counterparty-sanctions-flag-unresolved`) are evaluated directly at
+  `:delivery/dispatch` (and sanctions at `:invoice/settle` too) rather
+  than via a separate screening op -- a real dispatch decision validates
+  counterparty credit, contract-on-file, prior-informed-consent (where
+  applicable) and sanctions screening at the point of the act itself,
+  not as a discrete pre-screening ceremony. Each check is still
+  exercised directly and independently below, one order per HARD-hold
+  scenario, following the SAME 'exercise the failure mode directly,
+  never only via a happy-path actuation' discipline `parksafety`'s
+  ADR-2607071922 Decision 5 and every sibling since establish."
+  (:require [langgraph.graph :as g]
+            [wastetrade.store :as store]
+            [wastetrade.operation :as op]))
+
+(def operator {:actor-id "op-1" :actor-role :trading-supervisor :phase 3})
+
+(defn- exec-op [actor tid request context]
+  (g/run* actor {:request request :context context} {:thread-id tid}))
+
+(defn- approve! [actor tid]
+  (g/run* actor {:approval {:status :approved :by "op-1"}} {:thread-id tid :resume? true}))
+
+(defn -main [& _]
+  (let [db (store/seed-db)
+        actor (op/build db)]
+    (println "== order/intake wo-1 (WEEE/e-waste, JPN->DEU, clean, HAS documented PIC) ==")
+    (println (exec-op actor "t1" {:op :order/intake :subject "wo-1"
+                                  :patch {:id "wo-1" :counterparty "Kestrel Recycling & Recovery GmbH"}} operator))
+
+    (println "== consent/verify wo-1 (escalates -- human approves) ==")
+    (println (exec-op actor "t2" {:op :consent/verify :subject "wo-1"} operator))
+    (println (approve! actor "t2"))
+
+    (println "== delivery/dispatch wo-1 (always escalates -- :delivery/dispatch; PIC on file -> clean) ==")
+    (let [r (exec-op actor "t3" {:op :delivery/dispatch :subject "wo-1"} operator)]
+      (println r)
+      (println "-- human trading supervisor approves --")
+      (println (approve! actor "t3")))
+
+    (println "== invoice/settle wo-1 (always escalates -- :invoice/settle) ==")
+    (let [r (exec-op actor "t4" {:op :invoice/settle :subject "wo-1"} operator)]
+      (println r)
+      (println "-- human trading supervisor approves --")
+      (println (approve! actor "t4")))
+
+    (println "== consent/verify wo-2 (no spec-basis -> HARD hold) ==")
+    (println (exec-op actor "t5" {:op :consent/verify :subject "wo-2"} operator))
+
+    (println "== consent/verify wo-3 (escalates -- human approves; sets up the credit-uncleared test) ==")
+    (println (exec-op actor "t6" {:op :consent/verify :subject "wo-3"} operator))
+    (println (approve! actor "t6"))
+
+    (println "== delivery/dispatch wo-3 (credit not cleared -> HARD hold) ==")
+    (println (exec-op actor "t7" {:op :delivery/dispatch :subject "wo-3"} operator))
+
+    (println "== consent/verify wo-4 (escalates -- human approves; sets up the contract-missing test) ==")
+    (println (exec-op actor "t8" {:op :consent/verify :subject "wo-4"} operator))
+    (println (approve! actor "t8"))
+
+    (println "== delivery/dispatch wo-4 (no contract-terms on file -> HARD hold) ==")
+    (println (exec-op actor "t9" {:op :delivery/dispatch :subject "wo-4"} operator))
+
+    (println "== consent/verify wo-5 (escalates -- human approves; sets up the sanctions test) ==")
+    (println (exec-op actor "t10" {:op :consent/verify :subject "wo-5"} operator))
+    (println (approve! actor "t10"))
+
+    (println "== delivery/dispatch wo-5 (sanctions screening not passed -> HARD hold) ==")
+    (println (exec-op actor "t11" {:op :delivery/dispatch :subject "wo-5"} operator))
+
+    (println "== consent/verify wo-6 (used lead-acid batteries, HAZARDOUS, destined for USA -- a Basel non-Party but with its own RCRA import-consent regime; escalates -- human approves) ==")
+    (println (exec-op actor "t12" {:op :consent/verify :subject "wo-6"} operator))
+    (println (approve! actor "t12"))
+
+    (println "== delivery/dispatch wo-6 (hazardous, NEITHER transboundary-notification NOR destination-country consent on file -> HARD hold, the domain-defining check) ==")
+    (println (exec-op actor "t13" {:op :delivery/dispatch :subject "wo-6"} operator))
+
+    (println "== consent/verify wo-7 (sorted ferrous scrap, GREEN-LIST/non-hazardous; escalates -- human approves; sets up the type-gating control) ==")
+    (println (exec-op actor "t14" {:op :consent/verify :subject "wo-7"} operator))
+    (println (approve! actor "t14"))
+
+    (println "== delivery/dispatch wo-7 (sorted ferrous scrap, SAME undocumented PIC facts as wo-6, but NOT a hazardous stream -> dispatches cleanly, escalates only for the usual human sign-off -- proves the check is genuinely type-gated, not a blanket PIC requirement) ==")
+    (let [r (exec-op actor "t15" {:op :delivery/dispatch :subject "wo-7"} operator)]
+      (println r)
+      (println "-- human trading supervisor approves --")
+      (println (approve! actor "t15")))
+
+    (println "== consent/verify wo-8 (hazardous chemical waste; escalates -- human approves; sets up the partial-PIC-satisfaction test) ==")
+    (println (exec-op actor "t16" {:op :consent/verify :subject "wo-8"} operator))
+    (println (approve! actor "t16"))
+
+    (println "== delivery/dispatch wo-8 (notification FILED but destination-country consent NOT documented -> still HARD hold; proves BOTH sub-facts are required, not either) ==")
+    (println (exec-op actor "t17" {:op :delivery/dispatch :subject "wo-8"} operator))
+
+    (println "== delivery/dispatch wo-1 AGAIN (double-dispatch -> HARD hold) ==")
+    (println (exec-op actor "t18" {:op :delivery/dispatch :subject "wo-1"} operator))
+
+    (println "== invoice/settle wo-1 AGAIN (double-invoice -> HARD hold) ==")
+    (println (exec-op actor "t19" {:op :invoice/settle :subject "wo-1"} operator))
+
+    (println "== audit ledger ==")
+    (doseq [f (store/ledger db)] (println f))
+
+    (println "== draft waste-dispatch records ==")
+    (doseq [r (store/dispatch-history db)] (println r))
+
+    (println "== draft waste-invoice records ==")
+    (doseq [r (store/invoice-history db)] (println r))))

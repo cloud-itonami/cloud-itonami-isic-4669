@@ -1,0 +1,259 @@
+(ns wastetrade.facts
+  "Per-jurisdiction waste/scrap-wholesale customs / export-control
+  regulatory catalog -- the G2-style spec-basis table the Waste Trading
+  Governor checks every `:consent/verify` proposal against ('did the
+  advisor cite an OFFICIAL public source for this jurisdiction's
+  waste-export / customs / sanctions requirements, or did it invent
+  one?') -- PLUS a SEPARATE `consent-basis` catalog, keyed by
+  DESTINATION country, that supplies the citation the advisor uses when
+  drafting a prior-informed-consent (PIC) checklist for a hazardous-
+  waste-stream order (see `wastetrade.governor` for why the PIC CHECK
+  itself is not jurisdiction-gated even though its CITATION is).
+
+  Each `catalog` entry below is a REAL jurisdiction with a REAL customs /
+  waste-export regime: Japan's Ministry of the Environment (環境省) waste
+  jurisdiction under the Waste Management and Public Cleansing Act
+  (廃棄物の処理及び清掃に関する法律) plus the Basel-implementing Act on the
+  Control of Export, Import and Others of Specified Hazardous Wastes and
+  Other Wastes (特定有害廃棄物等の輸出入等の規制に関する法律, commonly
+  'バーゼル法' / the 'Basel Act'), the US Environmental Protection Agency
+  (EPA)'s Resource Conservation and Recovery Act (RCRA, 42 U.S.C. §6901
+  et seq.) hazardous-waste export/import regime (40 CFR Part 262 Subpart
+  H) plus CBP customs entry and OFAC sanctions, the UK's Transfrontier
+  Shipment of Waste Regulations 2007 (SI 2007/1711, as amended, retained
+  post-Brexit) administered by the Environment Agency, and Germany's
+  administration of the EU Waste Shipment Regulation representing the EU
+  regime.
+
+  `consent-basis` is a DIFFERENT catalog because the real-world legal
+  picture is genuinely bilateral, unlike ordinary customs/excise law: the
+  Basel Convention's Prior Informed Consent (PIC) procedure requires the
+  DESTINATION country's own competent authority to give documented
+  written consent BEFORE a hazardous-waste export proceeds -- see
+  `wastetrade.governor`'s `prior-informed-consent-missing-violations`
+  docstring for why the CHECK itself is gated on the WASTE-STREAM'S OWN
+  hazard classification, evaluated unconditionally across every
+  jurisdiction pairing (deliberately the SAME gating shape the metal-
+  wholesale sibling `cloud-itonami-isic-4662` uses for its conflict-
+  minerals check, and a deliberate DEPARTURE from the textile-wholesale
+  sibling `cloud-itonami-isic-4641`'s jurisdiction-gated forced-labor
+  check -- see `docs/adr/0001-architecture.md` Decision 4 for the full
+  three-way contrast).
+
+  Coverage is reported HONESTLY (see `coverage`), the same discipline
+  every sibling actor's `facts` namespace uses: a jurisdiction not in
+  `catalog` has NO spec-basis, full stop -- the advisor must not
+  fabricate one, and the governor holds if it tries.")
+
+(def catalog
+  "iso3 -> requirement map. `:required-evidence` is the counterparty-
+  diligence evidence set (credit-clearance record, contract/PO,
+  sanctions-screening record) evaluated by `evidence-incomplete-
+  violations`; `:legal-basis` / `:owner-authority` / `:provenance` are
+  the G2 citation the governor requires before any `:consent/verify`
+  proposal can commit. This is the GENERAL trade/customs-jurisdiction
+  catalog, keyed by the EXPORTING (trader's own) jurisdiction -- see
+  `consent-basis` below for the separate, DESTINATION-country-keyed
+  prior-informed-consent citation."
+  {"JPN" {:name "JPN"
+          :owner-authority "環境省 (Ministry of the Environment) / 財務省 (MOF) 関税局 / 経済産業省 (METI)"
+          :legal-basis "廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法)"
+          :provenance "https://www.env.go.jp/"
+          :required-evidence ["credit-clearance record"
+                              "contract/PO"
+                              "sanctions-screening (OFAC/equivalent) record"]}
+   "USA" {:name "USA"
+          :owner-authority "U.S. Environmental Protection Agency (EPA) / U.S. Customs and Border Protection (CBP) / OFAC (U.S. Treasury)"
+          :legal-basis "Resource Conservation and Recovery Act (RCRA, 42 U.S.C. §6901 et seq.); hazardous waste export/import requirements at 40 CFR Part 262 Subpart H; OFAC sanctions programs"
+          :provenance "https://www.epa.gov/hwgenerators/hazardous-waste-export-and-import-requirements"
+          :required-evidence ["credit-clearance record"
+                              "contract/PO"
+                              "sanctions-screening (OFAC/equivalent) record"]}
+   "GBR" {:name "GBR"
+          :owner-authority "Environment Agency (England) / Department for Environment, Food and Rural Affairs (DEFRA) / HM Revenue & Customs (HMRC)"
+          :legal-basis "Transfrontier Shipment of Waste Regulations 2007 (SI 2007/1711, as amended -- retained, post-Brexit UK implementation of international waste-shipment control)"
+          :provenance "https://www.gov.uk/government/organisations/environment-agency"
+          :required-evidence ["credit-clearance record"
+                              "contract/PO"
+                              "sanctions-screening (OFAC/equivalent) record"]}
+   "DEU" {:name "DEU"
+          :owner-authority "Umweltbundesamt (German Environment Agency, UBA) / Generalzolldirektion (German Customs) under the Bundesministerium der Finanzen (BMF)"
+          :legal-basis "Regulation (EU) 2024/1157 on shipments of waste (the recast EU Waste Shipment Regulation, replacing Regulation (EC) No 1013/2006)"
+          :provenance "https://eur-lex.europa.eu/eli/reg/2024/1157/oj"
+          :required-evidence ["credit-clearance record"
+                              "contract/PO"
+                              "sanctions-screening (OFAC/equivalent) record"]}})
+
+(def hazardous-waste-streams
+  "Waste-stream types this actor treats as HAZARDOUS, gating
+  `wastetrade.governor`'s `prior-informed-consent-missing-violations`
+  check -- see that function's docstring for why this set gates the
+  check and why it is a NO-OP for every non-hazardous / green-list
+  stream type below. This is an ILLUSTRATIVE starting classification,
+  NOT a transposition of the Basel Convention's own multi-hundred-entry
+  technical annexes (Annex I 'wastes to be controlled', Annex III 'list
+  of hazardous characteristics', Annex VIII 'list A' hazardous wastes,
+  Annex IX 'list B' wastes not subject to the Convention) or the OECD's
+  parallel Green/Amber/Red list system (OECD Decision C(2001)107/FINAL)
+  -- extending this set with a real Annex VIII/List-A citation is
+  additive, never a blanket 'to be safe' addition without one."
+  #{"waste electrical and electronic equipment (WEEE / e-waste)"
+    "used lead-acid batteries (ULAB)"
+    "hazardous chemical waste (spent solvents)"
+    "used oil"
+    "asbestos waste"})
+
+(defn hazardous-waste-stream? [waste-stream-type]
+  (boolean (contains? hazardous-waste-streams waste-stream-type)))
+
+(def green-list-waste-streams
+  "Waste-stream types this actor treats as NON-hazardous / 'green list'
+  -- illustrative counterexamples to `hazardous-waste-streams`, moving
+  under the Basel Convention's lighter Annex IX / OECD 'green list'
+  regime (no PIC required). Sorted, clean, single-material scrap is the
+  paradigm case: `wastetrade.governor`'s `prior-informed-consent-
+  missing-violations` is a genuine NO-OP for these -- see
+  `test/wastetrade/governor_contract_test.clj`'s
+  `prior-informed-consent-check-is-a-no-op-for-green-list-waste`."
+  #{"ferrous scrap metal (sorted, HS 7204)"
+    "non-ferrous scrap metal (sorted, clean)"
+    "sorted plastics (single-resin, e.g. PET/HDPE)"
+    "paper and cardboard (sorted, baled)"
+    "textile waste (sorted, clean)"})
+
+(def basel-party?
+  "iso3 -> is this jurisdiction a Party to the Basel Convention on the
+  Control of Transboundary Movements of Hazardous Wastes and Their
+  Disposal (adopted 22 March 1989, entered into force 5 May 1992, ~190
+  Parties)? I am highly confident about all four entries here,
+  including the well-documented, frequently-cited fact that the UNITED
+  STATES SIGNED the Convention in 1990 but the U.S. Senate has never
+  given advice and consent to ratify it -- the USA is NOT a Party. This
+  does NOT mean the USA has no hazardous-waste import-consent regime of
+  its own: see `consent-basis` below, and
+  `wastetrade.governor`'s namespace docstring for why the
+  prior-informed-consent CHECK still applies to a USA-destination
+  hazardous shipment even though the CITATION differs from the Basel PIC
+  procedure."
+  {"JPN" true
+   "GBR" true
+   "DEU" true
+   "USA" false})
+
+(def consent-basis
+  "iso3 (DESTINATION country) -> prior-informed-consent citation, DISTINCT
+  from `catalog` above (see namespace docstring for why). Every seeded
+  destination has SOME documented consent-from-destination-authority
+  regime -- the Basel Convention's own Prior Informed Consent (PIC)
+  procedure (Article 6: written notification to, and written consent
+  from, the importing State's competent authority BEFORE a hazardous-
+  waste export proceeds) for Parties, and the USA's own parallel RCRA
+  import-consent mechanism for the one seeded non-Party -- so
+  `consent-citation` below never falls back to a non-statutory baseline
+  the way the metal-wholesale sibling's OECD Guidance does. This is a
+  DELIBERATE difference from that sibling: Basel's PIC procedure and
+  RCRA's import-consent requirement are both REAL, BINDING legal
+  mechanisms, not an operational-floor-only baseline -- see
+  `docs/adr/0001-architecture.md` Decision 4."
+  {"JPN" {:owner-authority "環境省 (Ministry of the Environment), Japan's Basel Convention National Competent Authority / Focal Point"
+          :legal-basis "Basel Convention on the Control of Transboundary Movements of Hazardous Wastes and Their Disposal (1989; entered into force 1992), Article 6 Prior Informed Consent (PIC) procedure, as implemented domestically by the Basel Act (特定有害廃棄物等の輸出入等の規制に関する法律)"
+          :provenance "https://www.basel.int/"
+          :binding? true}
+   "GBR" {:owner-authority "Environment Agency (England), UK Basel Convention competent authority for waste shipments"
+          :legal-basis "Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented domestically by the Transfrontier Shipment of Waste Regulations 2007 (SI 2007/1711, as amended)"
+          :provenance "https://www.basel.int/"
+          :binding? true}
+   "DEU" {:owner-authority "Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework"
+          :legal-basis "Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented in EU law by Regulation (EU) 2024/1157 on shipments of waste"
+          :provenance "https://www.basel.int/"
+          :binding? true}
+   "USA" {:owner-authority "U.S. Environmental Protection Agency (EPA), Office of Resource Conservation and Recovery"
+          :legal-basis "The USA is NOT a Party to the Basel Convention (signed 1990, never ratified by the U.S. Senate), so the Basel Article 6 PIC procedure does not itself bind a USA-destination shipment. A PARALLEL, genuinely binding consent-from-destination requirement exists instead: RCRA's own hazardous-waste import-consent regime (40 CFR §262.83 exporter notification; 40 CFR §262.84 EPA consent to import), and -- for OECD-country-to-OECD-country waste destined for recovery -- the OECD Council Decision C(2001)107/FINAL 'on the Control of Transboundary Movements of Wastes Destined for Recovery Operations', which the USA implements domestically for OECD-partner trade. I am highly confident the USA is a Basel non-Party and that RCRA requires EPA import consent; I am only moderately confident about the precise boundary between the RCRA-only channel and the OECD-Decision channel for a given shipment, and this should be independently verified before this catalog is relied on operationally."
+          :provenance "https://www.epa.gov/hwgenerators/hazardous-waste-export-and-import-requirements"
+          :binding? true}})
+
+(defn consent-citation
+  "The prior-informed-consent citation for DESTINATION `iso3`, or nil if
+  none is seeded. Unlike the metal-wholesale sibling's
+  `conflict-minerals-citation` (which always falls back to a
+  non-statutory OECD baseline), every jurisdiction seeded here already
+  has a genuinely BINDING consent-from-destination-authority regime, so
+  there is no non-statutory fallback to reach for. A destination with NO
+  entry here has NO seeded consent-basis -- honestly report that, never
+  invent one."
+  [iso3]
+  (get consent-basis iso3))
+
+(defn spec-basis
+  "The EXPORTING jurisdiction's GENERAL trade/customs requirement map, or
+  nil -- nil means NO spec-basis, and the governor must hold any
+  proposal that tries to verify consent, dispatch waste, or settle an
+  invoice on it."
+  [iso3]
+  (get catalog iso3))
+
+(defn coverage
+  "Honest coverage report: how many of the requested jurisdictions
+  actually have a spec-basis entry. Never report a missing jurisdiction
+  as covered."
+  ([] (coverage (keys catalog)))
+  ([iso3s]
+   (let [have (filter catalog iso3s)
+         missing (remove catalog iso3s)]
+     {:requested (count iso3s)
+      :covered (count have)
+      :covered-jurisdictions (vec (sort have))
+      :missing-jurisdictions (vec (sort missing))
+      :note (str "cloud-itonami-isic-4669 R0: " (count catalog)
+                 " jurisdictions seeded with an official spec-basis. "
+                 "This is a starting catalog, not a survey of all ~194 "
+                 "jurisdictions -- extend `wastetrade.facts/catalog`, "
+                 "never fabricate a jurisdiction's requirements.")})))
+
+(defn required-evidence-satisfied?
+  "Does `submitted` (a set/coll of evidence keywords or strings) satisfy
+  every GENERAL evidence item listed for `iso3`? Missing spec-basis ->
+  never satisfied. Deliberately does NOT include prior-informed-consent
+  evidence -- that is a separate, hazard-type-gated governor check, not
+  part of the generic per-jurisdiction evidence checklist (see
+  `wastetrade.governor`)."
+  [iso3 submitted]
+  (when-let [{:keys [required-evidence]} (spec-basis iso3)]
+    (let [need (count required-evidence)
+          have (count (filter (set submitted) required-evidence))]
+      (= need have))))
+
+(defn evidence-checklist [iso3]
+  (:required-evidence (spec-basis iso3) []))
+
+;; ----------------------------- e-waste certification (informational only) -----------------------------
+
+(def e-waste-certification-schemes
+  "PRIVATE, VOLUNTARY industry certification schemes for downstream
+  processing/export of e-waste -- R2v3 (Responsible Recycling) and
+  e-Stewards. These are NOT government statutes and NEVER gate a HARD
+  governor check (unlike `consent-basis` above, which cites genuinely
+  binding law); they are surfaced here ONLY as an informational citation
+  `wastetradeadvisor` may draft for a human reviewer on a WEEE/e-waste
+  order, honestly labeled `:binding? false` /
+  `:certification-scheme? true` so they are never mistaken for a legal
+  requirement this actor enforces. I am confident both schemes are real,
+  widely-referenced, third-party-audited electronics-recycling
+  certification standards; I am not asserting either is legally required
+  in any of the seeded jurisdictions -- some downstream buyers and a
+  small number of sub-national procurement rules require one or the
+  other as a matter of contract or policy, not a universal statute."
+  {"R2v3" {:name "R2v3 (Responsible Recycling)"
+           :owner-authority "Sustainable Electronics Recycling International (SERI)"
+           :provenance "https://sustainableelectronics.org/r2/"
+           :binding? false
+           :certification-scheme? true}
+   "e-Stewards" {:name "e-Stewards"
+                 :owner-authority "Basel Action Network (BAN)"
+                 :provenance "https://e-stewards.org/"
+                 :binding? false
+                 :certification-scheme? true}})
+
+(defn e-waste-order?
+  [waste-stream-type]
+  (boolean (= waste-stream-type "waste electrical and electronic equipment (WEEE / e-waste)")))

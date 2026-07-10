@@ -1,0 +1,41 @@
+# Contributing
+
+`cloud-itonami-isic-4669` accepts contributions to the OSS blueprint, the
+Waste Trading Governor, policy tests, documentation and operator model.
+
+## Development
+This vertical is self-contained: there is no `kotoba-lang/wastetrade`
+capability library. The credit-clearance / contract-on-file / prior-
+informed-consent / sanctions-screening checks live directly in
+`wastetrade.governor`.
+
+```bash
+clojure -M:dev:test
+clojure -M:lint
+clojure -M:dev:run    # demo driver
+```
+
+## Rules
+- Do not commit real counterparty, credit, sanctions or transboundary-
+  waste-movement (competent-authority correspondence, consent documents)
+  data.
+- Keep dispatch, consent-verification and settlement behind the Waste
+  Trading Governor.
+- Treat waste/scrap-wholesale workflows as high-risk: add tests for
+  prior-informed-consent, jurisdiction, sanctions, double-actuation and
+  audit logging.
+- If you add or extend a jurisdiction in `wastetrade.facts/catalog`,
+  `wastetrade.facts/basel-party?` or `wastetrade.facts/consent-basis`,
+  cite a REAL official source -- never fabricate a jurisdiction's or a
+  statute's requirements.
+- If you add a waste-stream type to `wastetrade.facts/hazardous-waste-
+  streams`, document the real-world reasoning (which regime treats it as
+  hazardous, and since when) in `docs/business-model.md`'s honest
+  coverage section -- do not add a stream type "for completeness"
+  without a citation.
+- Document any new business-model or operator assumption in `docs/`.
+
+## Pull Requests
+PRs should describe: what behavior changed, which policy invariant is
+affected, how it was tested, whether operator or certification docs need
+updates.
