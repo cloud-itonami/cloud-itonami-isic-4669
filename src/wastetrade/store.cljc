@@ -52,10 +52,9 @@
   a destination-country competent authority, or an operator trusting a
   waste-wholesale actor needs, and the evidence an operator needs if a
   dispatch or an invoice is later disputed."
-  (:require #?(:clj  [clojure.edn :as edn]
-               :cljs [cljs.reader :as edn])
-            [wastetrade.registry :as registry]
-            [langchain.db :as d]))
+  (:require [wastetrade.registry :as registry]
+            [langchain.db :as d]
+            [langchain-store.core :as ls]))
 
 (defprotocol Store
   (waste-order [s id])
@@ -247,8 +246,10 @@
    :dispatch-sequence/jurisdiction       {:db/unique :db.unique/identity}
    :invoice-sequence/jurisdiction        {:db/unique :db.unique/identity}})
 
-(defn- enc [v] (pr-str v))
-(defn- dec* [s] (when s (edn/read-string s)))
+;; the EDN-blob codec (enc/dec*) is shared machinery -- see
+;; kotoba-lang/langchain-store's docstring (ADR-2607141600).
+(defn- enc [v] (ls/enc v))
+(defn- dec* [s] (ls/dec* s))
 
 ;; Every waste-order field is stored as its own Datomic attr so a
 ;; governor pull reads the exact ground truth (no blob decode). Boolean
