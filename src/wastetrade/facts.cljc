@@ -82,6 +82,13 @@
           :provenance "https://eur-lex.europa.eu/eli/reg/2024/1157/oj"
           :required-evidence ["credit-clearance record"
                               "contract/PO"
+                              "sanctions-screening (OFAC/equivalent) record"]}
+   "NLD" {:name "NLD"
+          :owner-authority "Nationale en Internationale Wegvervoer Organisatie (NIWO), the sector body designated to administer the national VIHB list under the Regeling inzamelaars, vervoerders, handelaars en bemiddelaars van afvalstoffen, on behalf of the Ministerie van Infrastructuur en Waterstaat; Inspectie Leefomgeving en Transport (ILT), the ministry inspectorate for cross-border EU Waste Shipment Regulation (EVOA) notification, supervision and enforcement"
+          :legal-basis "Regeling inzamelaars, vervoerders, handelaars en bemiddelaars van afvalstoffen (RIA), issued under Wet milieubeheer (Environmental Management Act) articles 10.45(5) / 10.55(4) and Besluit inzamelen afvalstoffen (Waste Collection Decree) articles 3, 4 and 10(2) -- requires registration on the national VIHB list (Vervoerder/Inzamelaar/Handelaar/Bemiddelaar) before collecting, transporting, trading ('handelen') or brokering business or hazardous waste on Dutch territory; cross-border shipments are additionally governed by Regulation (EU) 2024/1157 on shipments of waste (the recast EU Waste Shipment Regulation, Dutch short name 'herziene EVOA'), for which the ILT is the Dutch notification/supervision authority"
+          :provenance "https://wetten.overheid.nl/BWBR0016608"
+          :required-evidence ["credit-clearance record"
+                              "contract/PO"
                               "sanctions-screening (OFAC/equivalent) record"]}})
 
 (def hazardous-waste-streams
