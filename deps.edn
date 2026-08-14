@@ -31,6 +31,13 @@
          {:local/root "../../kotoba-lang/langchain"}}}
   ;; clojure -M:dev:run  -> drive the demo through one OperationActor
   :run {:main-opts ["-m" "wastetrade.sim"]}
+  ;; clojure -M:dev:render-html [out-file] -> regenerate
+  ;; docs/samples/operator-console.html by driving the REAL actor stack
+  ;; (operation -> governor -> store) and rendering what it produced.
+  ;; No jp-go-dds git dep on purpose: the DADS primitives the console
+  ;; references are inlined from this repo's own vendored docs/index.html
+  ;; token block, so the build stays offline.
+  :render-html {:main-opts ["-m" "wastetrade.render-html"]}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
