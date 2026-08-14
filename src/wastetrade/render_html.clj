@@ -319,7 +319,6 @@
     "  --color-primitive-red-900: #ce0000;"
     "  --color-primitive-green-50: #e6f5ec;"
     "  --color-primitive-green-100: #c2e5d1;"
-    "  --color-primitive-green-600: #259d63;"
     "  --color-primitive-green-800: #197a4b;"
     "  --color-primitive-green-900: #115a36;"
     "  --color-primitive-orange-50: #ffeee2;"
@@ -329,7 +328,6 @@
     "  --color-primitive-yellow-900: #927200;"
     "  --color-semantic-error-1: var(--color-primitive-red-800);"
     "  --color-semantic-error-2: var(--color-primitive-red-900);"
-    "  --color-semantic-success-1: var(--color-primitive-green-600);"
     "  --color-semantic-success-2: var(--color-primitive-green-800);"
     "  --color-semantic-warning-yellow-2: var(--color-primitive-yellow-900);"
     "  --font-family-sans: \"Noto Sans JP\", -apple-system, BlinkMacSystemFont, sans-serif;"
@@ -544,6 +542,19 @@
             (str "<span class=\"pill warn\">" (esc artifact-kind)
                  " に無し</span> <span class=\"muted\">(audit only — not in commit record)</span>"))))
 
+(defn- cite-cell
+  "`:basis` on a `:committed` fact is the advisor's CITATION list, not a
+  rule list -- the legal-basis strings are long, so show how many there
+  are plus a clipped first one, with the full text kept verbatim in the
+  `title` attribute (clipped for layout, never dropped)."
+  [basis]
+  (let [cites (mapv str basis)
+        joined (str/join " | " cites)
+        head (first cites)
+        clipped (if (> (count head) 72) (str (subs head 0 72) "…") head)]
+    (str "<span class=\"muted\" title=\"" (esc joined) "\">"
+         (count cites) " 件の引用 · " (esc clipped) "</span>")))
+
 (defn- ledger-row [{:keys [t op subject disposition basis phase-reason]}]
   (format (str "        <tr class=\"%s\"><td>%s</td><td><code>%s</code></td><td><code>%s</code></td>"
                "<td>%s</td><td>%s</td></tr>")
@@ -557,6 +568,7 @@
           (esc subject)
           (esc (name (or disposition :n-a)))
           (cond
+            (= :committed t) (if (seq basis) (cite-cell basis) "<span class=\"muted\">—</span>")
             (seq basis) (str/join " " (map #(str "<span class=\"pill hard\">"
                                                  (esc (name %)) "</span>") basis))
             phase-reason (str "<span class=\"pill warn\">" (esc (name phase-reason)) "</span>")
