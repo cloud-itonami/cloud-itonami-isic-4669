@@ -1,24 +1,310 @@
-<html><head><meta charset="utf-8"><title>cloud-itonami · wastetrade</title><style>table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.ok { color: #137a3f; }
-body { font-family: system-ui,-apple-system,sans-serif; margin: 0; color: #1a1a1a; background: #fafafa; }
-header.bar { display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #fff; border-bottom: 1px solid #e5e5e5; }
-th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
-h2 { margin-top: 0; font-size: 15px; }
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>cloud-itonami-isic-4669 · wastetrade — Operator Console</title><style>
+:root {
+  --color-neutral-white: #ffffff;
+  --color-neutral-solid-gray-50: #f2f2f2;
+  --color-neutral-solid-gray-100: #e6e6e6;
+  --color-neutral-solid-gray-200: #cccccc;
+  --color-neutral-solid-gray-300: #b3b3b3;
+  --color-neutral-solid-gray-536: #767676;
+  --color-neutral-solid-gray-600: #666666;
+  --color-neutral-solid-gray-700: #4d4d4d;
+  --color-neutral-solid-gray-800: #333333;
+  --color-neutral-solid-gray-900: #1a1a1a;
+  --color-primitive-blue-50: #e8f1fe;
+  --color-primitive-blue-100: #d9e6ff;
+  --color-primitive-blue-900: #0017c1;
+  --color-primitive-blue-1000: #00118f;
+  --color-primitive-red-50: #fdeeee;
+  --color-primitive-red-100: #ffdada;
+  --color-primitive-red-800: #ec0000;
+  --color-primitive-red-900: #ce0000;
+  --color-primitive-green-50: #e6f5ec;
+  --color-primitive-green-100: #c2e5d1;
+  --color-primitive-green-800: #197a4b;
+  --color-primitive-green-900: #115a36;
+  --color-primitive-orange-50: #ffeee2;
+  --color-primitive-orange-100: #ffdfca;
+  --color-primitive-orange-900: #ac3e00;
+  --color-primitive-yellow-50: #fbf5e0;
+  --color-primitive-yellow-900: #927200;
+  --color-semantic-error-1: var(--color-primitive-red-800);
+  --color-semantic-error-2: var(--color-primitive-red-900);
+  --color-semantic-success-2: var(--color-primitive-green-800);
+  --color-semantic-warning-yellow-2: var(--color-primitive-yellow-900);
+  --font-family-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: "Noto Sans Mono", monospace;
+  --elevation-1: 0 2px 8px 1px rgba(0, 0, 0, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.3);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--color-neutral-solid-gray-50);
+  color: var(--color-neutral-solid-gray-800); font-family: var(--font-family-sans);
+  line-height: 1.7; }
+header.bar { display: flex; flex-wrap: wrap; align-items: baseline; gap: .75rem;
+  padding: 1.25rem 1.5rem; background: var(--color-neutral-white);
+  border-bottom: 4px solid var(--color-primitive-blue-900); }
+header.bar h1 { font-size: 1.25rem; margin: 0; font-weight: 700;
+  color: var(--color-neutral-solid-gray-900); }
+header.bar .badge { margin-left: auto; font-size: .8125rem;
+  color: var(--color-neutral-solid-gray-600); }
+main { max-width: 76rem; margin: 1.5rem auto; padding: 0 1.5rem 3rem; }
+.card { background: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-solid-gray-200); border-radius: 12px;
+  padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--elevation-1); }
+.card h2 { margin: 0 0 .25rem; font-size: 1.0625rem; font-weight: 700;
+  color: var(--color-neutral-solid-gray-900); }
+.card p.lede { margin: 0 0 1rem; font-size: .875rem;
+  color: var(--color-neutral-solid-gray-600); }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+th, td { text-align: left; padding: .5rem .625rem; vertical-align: top;
+  border-bottom: 1px solid var(--color-neutral-solid-gray-100); }
+th { font-weight: 700; font-size: .75rem; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--color-neutral-solid-gray-700);
+  border-bottom: 2px solid var(--color-neutral-solid-gray-300);
+  white-space: nowrap; }
 td.num { font-variant-numeric: tabular-nums; text-align: right; }
-.warn { color: #b25c00; background: #fff8e1; padding: 2px 6px; border-radius: 4px; }
-main { max-width: 1120px; margin: 24px auto; padding: 0 20px; }
-header.bar h1 { font-size: 18px; margin: 0; font-weight: 600; }
-.muted { color: #888; }
-.critical { color: #fff; background: #b3261e; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
-.card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-.err { color: #b3261e; background: #fbe9e7; padding: 2px 6px; border-radius: 4px; }
-button { font: inherit; padding: 4px 10px; border: 1px solid #d0d0d0; border-radius: 4px; background: #fff; color: #1a1a1a; cursor: pointer; }
-button.dispatch { color: #137a3f; border-color: #137a3f; }
-button.settle { color: #1a6fb8; border-color: #1a6fb8; }
-button:disabled { color: #aaa; border-color: #e0e0e0; cursor: not-allowed; }
-th { font-weight: 600; color: #555; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-header.bar .badge { margin-left: auto; font-size: 12px; color: #666; }
-.tag { font-size: 11px; padding: 1px 6px; border-radius: 10px; background: #eee; color: #555; }
-.tag.haz { background: #fde7e7; color: #a33; }
-.tag.green { background: #e6f4ea; color: #1a7a35; }
-</style></head><body><header class="bar"><h1>Wholesale of Waste and Scrap and Other Products N.E.C. — Operator Console</h1><span class="badge">read-only · governor-gated · human sign-off required</span></header><main><section class="card"><h2>Counterparty diligence + prior-informed-consent · wo-1 (WEEE/e-waste, Kestrel Recycling &amp; Recovery GmbH, JPN→DEU)</h2><table><thead><tr><th>Check</th><th>Fact</th><th>Required</th><th>Verdict</th></tr></thead><tbody><tr><td>Counterparty credit</td><td>cleared</td><td>credit-cleared? true</td><td><span class="ok">✓ cleared</span></td></tr><tr><td>Contract on file</td><td>FOB, net 30 days</td><td>contract-terms present</td><td><span class="ok">✓ on file</span></td></tr><tr><td>Transboundary-movement notification <span class="tag haz">hazardous</span></td><td>filed with DEU competent authority</td><td>transboundary-notification-filed? true</td><td><span class="ok">✓ filed</span></td></tr><tr><td>Destination-country consent (PIC) <span class="tag haz">hazardous</span></td><td>documented, Umweltbundesamt</td><td>destination-country-consent-documented? true</td><td><span class="ok">✓ documented</span></td></tr><tr><td>Sanctions screening (OFAC / equivalent)</td><td>screened</td><td>sanctions-screened? true</td><td><span class="ok">✓ screened</span></td></tr><tr><td>Evidence (credit / contract-PO / sanctions)</td><td>3 / 3</td><td>JPN 廃棄物処理法 / バーゼル法</td><td><span class="ok">✓ complete</span></td></tr></tbody></table><p class="muted" style="margin-bottom:0">Governor clean — but <strong>:delivery/dispatch still escalates to a human trading supervisor</strong> (never auto-commits at any phase).</p></section><section class="card"><h2>Waste-orders</h2><table><thead><tr><th>ID</th><th>Order</th><th>Waste stream</th><th>Counterparty</th><th>Jurisdiction → Destination</th><th>Governor verdict</th><th>Action</th></tr></thead><tbody><tr><td>wo-1</td><td>WO-2026-0001</td><td>WEEE/e-waste <span class="tag haz">hazardous</span></td><td>Kestrel Recycling &amp; Recovery GmbH</td><td>JPN → DEU</td><td><span class="warn">escalate · dispatch</span></td><td><button class="dispatch">Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-7</td><td>WO-2026-0007</td><td>ferrous scrap (sorted) <span class="tag green">green-list</span></td><td>Granite Ferrous Scrap Traders Inc</td><td>JPN → DEU</td><td><span class="warn">escalate · dispatch</span></td><td><button class="dispatch">Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-3</td><td>WO-2026-0003</td><td>WEEE/e-waste <span class="tag haz">hazardous</span></td><td>Cedar Scrap &amp; Salvage Corp</td><td>JPN → DEU</td><td><span class="err">HOLD · credit-uncleared</span></td><td><button class="dispatch" disabled>Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-4</td><td>WO-2026-0004</td><td>WEEE/e-waste <span class="tag haz">hazardous</span></td><td>Delta Recyclables BV</td><td>JPN → DEU</td><td><span class="err">HOLD · contract-missing</span></td><td><button class="dispatch" disabled>Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-6</td><td>WO-2026-0006</td><td>used lead-acid batteries <span class="tag haz">hazardous</span></td><td>Fenwick Battery Recyclers Inc</td><td>JPN → USA (Basel non-Party)</td><td><span class="critical">HOLD · prior-informed-consent-missing</span></td><td><button class="dispatch" disabled>Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-8</td><td>WO-2026-0008</td><td>hazardous chemical waste <span class="tag haz">hazardous</span></td><td>Halcyon Hazardous Waste Logistics AG</td><td>JPN → DEU</td><td><span class="critical">HOLD · prior-informed-consent-missing (partial: notification filed, consent undocumented)</span></td><td><button class="dispatch" disabled>Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-5</td><td>WO-2026-0005</td><td>WEEE/e-waste <span class="tag haz">hazardous</span></td><td>Eagle Environmental Services SA</td><td>JPN → DEU</td><td><span class="critical">HOLD · counterparty-sanctions-flag-unresolved</span></td><td><button class="dispatch" disabled>Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr><tr><td>wo-2</td><td>WO-2026-0002</td><td>WEEE/e-waste <span class="tag haz">hazardous</span></td><td>Atlantis Waste Traders Ltd</td><td>ATL → DEU</td><td><span class="err">HOLD · no-spec-basis</span></td><td><button class="dispatch" disabled>Dispatch…</button> <button class="settle" disabled>Settle</button></td></tr></tbody></table><p class="muted" style="margin-bottom:0">HOLD verdicts are un-overridable and never reach a human approver; <span class="warn">escalate</span> pauses for a human trading supervisor's sign-off. wo-6 (used lead-acid batteries) and wo-7 (sorted ferrous scrap) carry the SAME undocumented prior-informed-consent facts — wo-6 HOLDS because it is a hazardous stream in this actor's scope (and the USA, though a Basel non-Party, has its own parallel RCRA destination-consent requirement), wo-7 does not because sorted ferrous scrap is a green-list stream. wo-8 HOLDS even though the transboundary notification WAS filed, because destination-country consent alone is not enough — both sub-facts are required. Settle is enabled only after an order is dispatched.</p></section></main></body></html>
+code { font-family: var(--font-family-mono); font-size: .9em;
+  background: var(--color-neutral-solid-gray-50);
+  border: 1px solid var(--color-neutral-solid-gray-200);
+  border-radius: 4px; padding: 1px 5px; }
+.ok { color: var(--color-semantic-success-2); font-weight: 700; }
+.muted { color: var(--color-neutral-solid-gray-536); }
+.pill { display: inline-block; font-size: .75rem; font-weight: 700;
+  border-radius: 999px; padding: .0625rem .5rem; white-space: nowrap; }
+.pill.hard { background: var(--color-primitive-red-100);
+  color: var(--color-semantic-error-2); }
+.pill.hazard { background: var(--color-primitive-orange-100);
+  color: var(--color-primitive-orange-900); }
+.pill.green { background: var(--color-primitive-green-100);
+  color: var(--color-primitive-green-900); }
+.pill.warn { background: var(--color-primitive-yellow-50);
+  color: var(--color-semantic-warning-yellow-2); }
+.pill.info { background: var(--color-primitive-blue-100);
+  color: var(--color-primitive-blue-1000); }
+.pill.neutral { background: var(--color-neutral-solid-gray-100);
+  color: var(--color-neutral-solid-gray-700); }
+tr.hard-row { background: var(--color-primitive-red-50); }
+tr.commit-row { background: var(--color-primitive-green-50); }
+tr.phase-row { background: var(--color-primitive-orange-50); }
+tr.escalate-row { background: var(--color-primitive-blue-50); }
+.note { margin: 1rem 0 0; padding: .75rem 1rem; font-size: .8125rem;
+  border-left: 4px solid var(--color-primitive-blue-900);
+  background: var(--color-primitive-blue-50);
+  color: var(--color-neutral-solid-gray-800); }
+.note.defect { border-left-color: var(--color-semantic-error-1);
+  background: var(--color-primitive-red-50); }
+footer { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem 3rem;
+  font-size: .8125rem; color: var(--color-neutral-solid-gray-600); }
+</style></head><body>
+<header class="bar">
+  <h1>廃棄物・スクラップ卸売 (ISIC 4669) — Operator Console</h1>
+  <span class="badge">read-only sample · governor-gated · 出荷 / 請求は常に人間承認</span>
+</header>
+<main>
+  <section class="card">
+    <h2>この実行の要約</h2>
+    <p class="lede">このページは <code>wastetrade.render-html</code> が <code>wastetrade.operation</code> (langgraph StateGraph) → <code>wastetrade.governor</code> → <code>wastetrade.store</code> を実際に走らせ、その結果だけから生成したものです。手書きの値はありません。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>指標</th><th>値</th></tr></thead>
+      <tbody>
+        <tr><td>waste-order (seed)</td><td class="num">8</td></tr>
+        <tr><td>監査台帳 fact (append-only)</td><td class="num">22</td></tr>
+        <tr><td>HARD governor hold</td><td class="num">9</td></tr>
+        <tr><td>発火した governor rule (種類)</td><td class="num">8 / 8</td></tr>
+        <tr><td>rollout phase gate による hold</td><td class="num">1</td></tr>
+        <tr><td>人間が却下した提案</td><td class="num">1</td></tr>
+        <tr><td>出荷レジスタ (draft)</td><td class="num">2</td></tr>
+        <tr><td>請求レジスタ (draft)</td><td class="num">1</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">HARD hold は人間が上書きできません。<code>:delivery/dispatch</code> と <code>:invoice/settle</code> は <code>wastetrade.phase</code> のどの phase の <code>:auto</code> にも入っておらず、governor の high-stakes ゲートとあわせて<strong>二重に</strong>人間承認を強制します。</p>
+  </section>
+  <section class="card">
+    <h2>Waste orders — 取引先デューデリジェンス</h2>
+    <p class="lede">seed 済み waste-order を <code>wastetrade.store/all-waste-orders</code> から読み出したもの。信用審査 / 契約 / 制裁スクリーニングは governor が 出荷・請求の時点で直接読む ground truth です。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>id</th><th>order-id</th><th>取引先</th><th>廃棄物区分</th><th>法域</th><th>信用審査</th><th>契約条項</th><th>制裁 SC</th><th>出荷 / 請求番号</th><th>最後の op</th></tr></thead>
+      <tbody>
+        <tr><td><code>wo-1</code></td><td><code>WO-2026-0001</code></td><td>Kestrel Recycling &amp; Recovery GmbH</td><td>waste electrical and electronic equipment (WEEE / e-waste) <span class="pill hazard">有害 / hazardous</span></td><td><code>JPN</code></td><td><span class="ok">はい</span></td><td>FOB, net 30 days</td><td><span class="ok">はい</span></td><td><code>JPN-DISPATCH-000000</code> / <code>JPN-INVOICE-000000</code></td><td><span class="pill hard">HARD hold · already-invoiced</span></td></tr>
+        <tr><td><code>wo-2</code></td><td><code>WO-2026-0002</code></td><td>Atlantis Waste Traders Ltd</td><td>waste electrical and electronic equipment (WEEE / e-waste) <span class="pill hazard">有害 / hazardous</span></td><td><code>ATL</code></td><td><span class="ok">はい</span></td><td>FOB, net 30 days</td><td><span class="ok">はい</span></td><td><span class="muted">未出荷</span> / <span class="muted">未請求</span></td><td><span class="pill hard">HARD hold · no-spec-basis</span></td></tr>
+        <tr><td><code>wo-3</code></td><td><code>WO-2026-0003</code></td><td>Cedar Scrap &amp; Salvage Corp</td><td>waste electrical and electronic equipment (WEEE / e-waste) <span class="pill hazard">有害 / hazardous</span></td><td><code>JPN</code></td><td><span class="pill hard">いいえ</span></td><td>FOB, net 30 days</td><td><span class="ok">はい</span></td><td><span class="muted">未出荷</span> / <span class="muted">未請求</span></td><td><span class="pill hard">HARD hold · credit-uncleared</span></td></tr>
+        <tr><td><code>wo-4</code></td><td><code>WO-2026-0004</code></td><td>Delta Recyclables BV</td><td>waste electrical and electronic equipment (WEEE / e-waste) <span class="pill hazard">有害 / hazardous</span></td><td><code>JPN</code></td><td><span class="ok">はい</span></td><td><span class="pill hard">未記録</span></td><td><span class="ok">はい</span></td><td><span class="muted">未出荷</span> / <span class="muted">未請求</span></td><td><span class="pill hard">HARD hold · contract-missing</span></td></tr>
+        <tr><td><code>wo-5</code></td><td><code>WO-2026-0005</code></td><td>Eagle Environmental Services SA</td><td>waste electrical and electronic equipment (WEEE / e-waste) <span class="pill hazard">有害 / hazardous</span></td><td><code>JPN</code></td><td><span class="ok">はい</span></td><td>FOB, net 30 days</td><td><span class="pill hard">いいえ</span></td><td><span class="muted">未出荷</span> / <span class="muted">未請求</span></td><td><span class="pill hard">HARD hold · counterparty-sanctions-flag-unresolved</span></td></tr>
+        <tr><td><code>wo-6</code></td><td><code>WO-2026-0006</code></td><td>Fenwick Battery Recyclers Inc</td><td>used lead-acid batteries (ULAB) <span class="pill hazard">有害 / hazardous</span></td><td><code>JPN</code></td><td><span class="ok">はい</span></td><td>FOB, net 30 days</td><td><span class="ok">はい</span></td><td><span class="muted">未出荷</span> / <span class="muted">未請求</span></td><td><span class="pill hard">HARD hold · prior-informed-consent-missing</span></td></tr>
+        <tr><td><code>wo-7</code></td><td><code>WO-2026-0007</code></td><td>Granite Ferrous Scrap Traders Inc</td><td>ferrous scrap metal (sorted, HS 7204) <span class="pill green">green list</span></td><td><code>JPN</code></td><td><span class="ok">はい</span></td><td>FOB, net 30 days</td><td><span class="ok">はい</span></td><td><code>JPN-DISPATCH-000001</code> / <span class="muted">未請求</span></td><td><span class="pill warn">approver rejected</span></td></tr>
+        <tr><td><code>wo-8</code></td><td><code>WO-2026-0008</code></td><td>Halcyon Hazardous Waste Logistics AG</td><td>hazardous chemical waste (spent solvents) <span class="pill hazard">有害 / hazardous</span></td><td><code>JPN</code></td><td><span class="ok">はい</span></td><td>FOB, net 30 days</td><td><span class="ok">はい</span></td><td><span class="muted">未出荷</span> / <span class="muted">未請求</span></td><td><span class="pill hard">HARD hold · prior-informed-consent-missing</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>越境移動の事前同意 (PIC) — 二国間チェック</h2>
+    <p class="lede">この分野固有の、他の卸売 sibling に類例が無いチェック。有害廃棄物該当の荷口に対してのみ、越境移動事前通報と<strong>仕向国当局の事前同意</strong>の双方を要求します。仕向国の根拠は <code>wastetrade.facts/consent-basis</code> 由来です。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>id</th><th>廃棄物区分</th><th>仕向国</th><th>Basel 条約</th><th>仕向国の権限ある当局</th><th>事前通報</th><th>仕向国の同意</th><th>governor 判定</th></tr></thead>
+      <tbody>
+        <tr><td><code>wo-1</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="ok">はい</span></td><td><span class="ok">はい</span></td><td><span class="ok">PIC 充足</span></td></tr>
+        <tr><td><code>wo-2</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="ok">はい</span></td><td><span class="ok">はい</span></td><td><span class="ok">PIC 充足</span></td></tr>
+        <tr><td><code>wo-3</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="ok">はい</span></td><td><span class="ok">はい</span></td><td><span class="ok">PIC 充足</span></td></tr>
+        <tr><td><code>wo-4</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="ok">はい</span></td><td><span class="ok">はい</span></td><td><span class="ok">PIC 充足</span></td></tr>
+        <tr><td><code>wo-5</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="ok">はい</span></td><td><span class="ok">はい</span></td><td><span class="ok">PIC 充足</span></td></tr>
+        <tr><td><code>wo-6</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>USA</code></td><td><span class="pill warn">Basel 非締約国</span></td><td>U.S. Environmental Protection Agency (EPA), Office of Resource Conservation and Recovery</td><td><span class="pill hard">いいえ</span></td><td><span class="pill hard">いいえ</span></td><td><span class="pill hard">HARD hold</span></td></tr>
+        <tr><td><code>wo-7</code></td><td><span class="pill green">green list</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="muted">n/a (green list)</span></td><td><span class="muted">n/a (green list)</span></td><td><span class="pill green">PIC 検査対象外 (no-op)</span></td></tr>
+        <tr><td><code>wo-8</code></td><td><span class="pill hazard">有害 / hazardous</span></td><td><code>DEU</code></td><td><span class="pill info">Basel 締約国</span></td><td>Umweltbundesamt (German Environment Agency, UBA), Germany's Basel Convention competent authority, acting within the EU Waste Shipment Regulation framework</td><td><span class="ok">はい</span></td><td><span class="pill hard">いいえ</span></td><td><span class="pill hard">HARD hold</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Governor rule contract — 契約と実測</h2>
+    <p class="lede"><code>wastetrade.governor</code> が公開している 8 つの HARD rule。「この実行で発火」列と発火回数は台帳から導出しています。ビルドは全 rule が発火しなければ失敗します (<code>-main</code> の不変条件)。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>rule</th><th>対象 op</th><th>何を再検証するか</th><th>この実行</th><th>hold 数</th></tr></thead>
+      <tbody>
+        <tr class="hard-row"><td><code>:no-spec-basis</code></td><td><code>:consent/verify · :delivery/dispatch · :invoice/settle</code></td><td>公式 spec-basis (wastetrade.facts/catalog) の引用が無い提案。法域要件を創作させない。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+        <tr class="hard-row"><td><code>:evidence-incomplete</code></td><td><code>:delivery/dispatch · :invoice/settle</code></td><td>法域の必要書類 3 件 (信用審査記録 / 契約書または PO / 制裁スクリーニング記録) が充足していない。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+        <tr class="hard-row"><td><code>:credit-uncleared</code></td><td><code>:delivery/dispatch</code></td><td>取引先の信用審査 (:credit-cleared?) が未了のまま出荷しようとした。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+        <tr class="hard-row"><td><code>:contract-missing</code></td><td><code>:delivery/dispatch</code></td><td>契約条項 (:contract-terms) の記録が無いまま出荷しようとした。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+        <tr class="hard-row"><td><code>:prior-informed-consent-missing</code></td><td><code>:delivery/dispatch</code></td><td>有害廃棄物該当の荷口で、越境移動事前通報 (:transboundary-notification-filed?) と仕向国当局の事前同意 (:destination-country-consent-documented?) の双方が揃っていない。この分野固有の二国間チェック。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">2</td></tr>
+        <tr class="hard-row"><td><code>:counterparty-sanctions-flag-unresolved</code></td><td><code>:delivery/dispatch · :invoice/settle</code></td><td>取引先の制裁スクリーニング (OFAC 等, :sanctions-screened?) が未了。廃棄物も資金も動かさない。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+        <tr class="hard-row"><td><code>:already-dispatched</code></td><td><code>:delivery/dispatch</code></td><td>同一 waste-order の二重出荷。専用の :dispatched? を見る (:status は見ない)。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+        <tr class="hard-row"><td><code>:already-invoiced</code></td><td><code>:invoice/settle</code></td><td>同一 waste-order の二重請求。専用の :invoiced? を見る (:status は見ない)。</td><td><span class="pill hard">この実行で発火</span></td><td class="num">1</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>HARD holds — この実行で実際に止めたもの</h2>
+    <p class="lede">台帳の <code>:governor-hold</code> のうち rule 違反を伴うもの。detail 文字列は governor が生成したもので、ページ側では加工していません。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>op</th><th>waste-order</th><th>rule</th><th>governor の detail</th><th>confidence</th></tr></thead>
+      <tbody>
+        <tr class="hard-row"><td class="num">1</td><td><code>dispatch</code></td><td><code>wo-1</code></td><td><span class="pill hard">evidence-incomplete</span></td><td>法域の必要書類(信用審査記録/契約書またはPO/制裁スクリーニング記録)が充足していない状態での提案</td><td class="num">0.9</td></tr>
+        <tr class="hard-row"><td class="num">2</td><td><code>dispatch</code></td><td><code>wo-1</code></td><td><span class="pill hard">already-dispatched</span></td><td>wo-1 は既に出荷済み</td><td class="num">0.9</td></tr>
+        <tr class="hard-row"><td class="num">3</td><td><code>settle</code></td><td><code>wo-1</code></td><td><span class="pill hard">already-invoiced</span></td><td>wo-1 は既に請求済み</td><td class="num">0.9</td></tr>
+        <tr class="hard-row"><td class="num">4</td><td><code>verify</code></td><td><code>wo-2</code></td><td><span class="pill hard">no-spec-basis</span></td><td>公式spec-basisの引用が無い提案は法域要件として扱えない</td><td class="num">0.9</td></tr>
+        <tr class="hard-row"><td class="num">5</td><td><code>dispatch</code></td><td><code>wo-3</code></td><td><span class="pill hard">credit-uncleared</span></td><td>wo-3 の取引先信用審査(credit-clearance)が未了 -- 出荷提案は進められない</td><td class="num">0.3</td></tr>
+        <tr class="hard-row"><td class="num">6</td><td><code>dispatch</code></td><td><code>wo-4</code></td><td><span class="pill hard">contract-missing</span></td><td>wo-4 に契約条項(contract-terms)の記録が無い -- 出荷提案は進められない</td><td class="num">0.3</td></tr>
+        <tr class="hard-row"><td class="num">7</td><td><code>dispatch</code></td><td><code>wo-5</code></td><td><span class="pill hard">counterparty-sanctions-flag-unresolved</span></td><td>wo-5 の取引先制裁スクリーニング(OFAC等)が未了 -- 出荷・請求提案は進められない</td><td class="num">0.3</td></tr>
+        <tr class="hard-row"><td class="num">8</td><td><code>dispatch</code></td><td><code>wo-6</code></td><td><span class="pill hard">prior-informed-consent-missing</span></td><td>wo-6 (used lead-acid batteries (ULAB), 有害廃棄物該当, 仕向国=USA)の国境を越える移動事前通報(transboundary-notification)=false / 仕向国の権限ある当局の事前同意(destination-country consent)=false -- いずれかが未充足のため出荷提案は進められない</td><td class="num">0.3</td></tr>
+        <tr class="hard-row"><td class="num">9</td><td><code>dispatch</code></td><td><code>wo-8</code></td><td><span class="pill hard">prior-informed-consent-missing</span></td><td>wo-8 (hazardous chemical waste (spent solvents), 有害廃棄物該当, 仕向国=DEU)の国境を越える移動事前通報(transboundary-notification)=true / 仕向国の権限ある当局の事前同意(destination-country consent)=false -- いずれかが未充足のため出荷提案は進められない</td><td class="num">0.3</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Rollout phase gate (0→3)</h2>
+    <p class="lede"><code>wastetrade.phase/phases</code> をそのまま描画したもの。この実行は phase 3 (青い行) を既定に使い、比較のため phase 0 でも <code>:order/intake</code> を 1 回投げています (governor は clean、phase gate が <code>:phase-disabled</code> で hold)。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>phase</th><th>label</th><th>書き込み可能な op</th><th>自動 commit 可能な op</th></tr></thead>
+      <tbody>
+        <tr><td class="num">0</td><td>read-only</td><td><span class="muted">なし</span></td><td><span class="muted">なし</span></td></tr>
+        <tr><td class="num">1</td><td>assisted-intake</td><td><code>:order/intake</code></td><td><span class="muted">なし</span></td></tr>
+        <tr><td class="num">2</td><td>assisted-verify</td><td><code>:consent/verify</code> <code>:order/intake</code></td><td><span class="muted">なし</span></td></tr>
+        <tr class="escalate-row"><td class="num">3</td><td>supervised-auto</td><td><code>:consent/verify</code> <code>:delivery/dispatch</code> <code>:invoice/settle</code> <code>:order/intake</code></td><td><code>:order/intake</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>承認と帰属 (approver attribution) — 実測</h2>
+    <p class="lede">承認者 ID は graph の <code>:audit</code> チャネル (<code>:approval-granted</code> の <code>:by</code>) にあります。右端の列は<strong>ページ生成時に store の実レコードのキーを走査して</strong>判定しており、store 側が後日 <code>:approved-by</code> を保持するように直れば、このページは次回ビルドで自動的に表示が変わります。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>thread</th><th>op</th><th>waste-order</th><th>escalate 理由</th><th>結果</th><th>承認者</th><th>commit record 側</th></tr></thead>
+      <tbody>
+        <tr class="commit-row"><td><code>t1-verify</code></td><td><code>verify</code></td><td><code>wo-1</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="commit-row"><td><code>t1-dispatch</code></td><td><code>dispatch</code></td><td><code>wo-1</code></td><td><code>actuation</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="pill warn">waste-dispatch register に無し</span> <span class="muted">(audit only — not in commit record)</span></td></tr>
+        <tr class="commit-row"><td><code>t1-settle</code></td><td><code>settle</code></td><td><code>wo-1</code></td><td><code>actuation</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="pill warn">waste-invoice register に無し</span> <span class="muted">(audit only — not in commit record)</span></td></tr>
+        <tr class="commit-row"><td><code>t3-verify</code></td><td><code>verify</code></td><td><code>wo-3</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="commit-row"><td><code>t4-verify</code></td><td><code>verify</code></td><td><code>wo-4</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="commit-row"><td><code>t5-verify</code></td><td><code>verify</code></td><td><code>wo-5</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="commit-row"><td><code>t6-verify</code></td><td><code>verify</code></td><td><code>wo-6</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="commit-row"><td><code>t7-verify</code></td><td><code>verify</code></td><td><code>wo-7</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="commit-row"><td><code>t7-dispatch</code></td><td><code>dispatch</code></td><td><code>wo-7</code></td><td><code>actuation</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="pill warn">waste-dispatch register に無し</span> <span class="muted">(audit only — not in commit record)</span></td></tr>
+        <tr class="commit-row"><td><code>t8-verify</code></td><td><code>verify</code></td><td><code>wo-8</code></td><td><code>phase-approval</code></td><td><span class="ok">approved</span></td><td><code>op-1</code></td><td><span class="ok">assessment payload に保持</span></td></tr>
+        <tr class="phase-row"><td><code>t7-settle</code></td><td><code>settle</code></td><td><code>wo-7</code></td><td><code>actuation</code></td><td><span class="pill warn">rejected → HOLD</span></td><td><code>op-1</code></td><td><span class="muted">no commit record written</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <p class="note defect"><strong>実測した store の挙動:</strong> 3 件の承認済み actuation で、承認者 ID が commit record に残っていません。<code>wastetrade.operation/commit-record</code> は <code>:payload</code> に <code>:approved-by</code> を載せますが、<code>wastetrade.store</code> の <code>:order/mark-dispatched</code> / <code>:order/mark-invoiced</code> 分岐は <code>value</code> も <code>payload</code> も読まず、<code>wastetrade.registry</code> の レコードだけを保存します (<code>:consent-assessment/set</code> は <code>payload</code> を保存するので、そちらでは承認者が残ります)。したがって上表の「承認者」は<strong>監査台帳側からの join であり、commit record には無い</strong> — 「誰も承認していない」ことの表示ではありません。</p>
+  </section>
+  <section class="card">
+    <h2>法域 spec-basis カバレッジ</h2>
+    <p class="lede">cloud-itonami-isic-4669 R0: 5 jurisdictions seeded with an official spec-basis. This is a starting catalog, not a survey of all ~194 jurisdictions -- extend `wastetrade.facts/catalog`, never fabricate a jurisdiction's requirements. 未登録の法域は正直に未登録と報告し、要件を創作しません。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>ISO3</th><th>この実行</th><th>所管当局</th><th>法的根拠</th><th>出典</th></tr></thead>
+      <tbody>
+        <tr class="hard-row"><td><code>ATL</code></td><td><span class="pill info">この実行で使用</span></td><td><span class="pill hard">spec-basis 無し → :no-spec-basis で HARD hold</span></td><td>—</td><td>—</td></tr>
+        <tr><td><code>DEU</code></td><td><span class="muted">未使用</span></td><td>Umweltbundesamt (German Environment Agency, UBA) / Generalzolldirektion (German Customs) under the Bundesministerium der Finanzen (BMF)</td><td>Regulation (EU) 2024/1157 on shipments of waste (the recast EU Waste Shipment Regulation, replacing Regulation (EC) No 1013/2006)</td><td><code>https://eur-lex.europa.eu/eli/reg/2024/1157/oj</code></td></tr>
+        <tr><td><code>GBR</code></td><td><span class="muted">未使用</span></td><td>Environment Agency (England) / Department for Environment, Food and Rural Affairs (DEFRA) / HM Revenue &amp; Customs (HMRC)</td><td>Transfrontier Shipment of Waste Regulations 2007 (SI 2007/1711, as amended -- retained, post-Brexit UK implementation of international waste-shipment control)</td><td><code>https://www.gov.uk/government/organisations/environment-agency</code></td></tr>
+        <tr><td><code>JPN</code></td><td><span class="pill info">この実行で使用</span></td><td>環境省 (Ministry of the Environment) / 財務省 (MOF) 関税局 / 経済産業省 (METI)</td><td>廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法)</td><td><code>https://www.env.go.jp/</code></td></tr>
+        <tr><td><code>NLD</code></td><td><span class="muted">未使用</span></td><td>Nationale en Internationale Wegvervoer Organisatie (NIWO), the sector body designated to administer the national VIHB list under the Regeling inzamelaars, vervoerders, handelaars en bemiddelaars van afvalstoffen, on behalf of the Ministerie van Infrastructuur en Waterstaat; Inspectie Leefomgeving en Transport (ILT), the ministry inspectorate for cross-border EU Waste Shipment Regulation (EVOA) notification, supervision and enforcement</td><td>Regeling inzamelaars, vervoerders, handelaars en bemiddelaars van afvalstoffen (RIA), issued under Wet milieubeheer (Environmental Management Act) articles 10.45(5) / 10.55(4) and Besluit inzamelen afvalstoffen (Waste Collection Decree) articles 3, 4 and 10(2) -- requires registration on the national VIHB list (Vervoerder/Inzamelaar/Handelaar/Bemiddelaar) before collecting, transporting, trading ('handelen') or brokering business or hazardous waste on Dutch territory; cross-border shipments are additionally governed by Regulation (EU) 2024/1157 on shipments of waste (the recast EU Waste Shipment Regulation, Dutch short name 'herziene EVOA'), for which the ILT is the Dutch notification/supervision authority</td><td><code>https://wetten.overheid.nl/BWBR0016608</code></td></tr>
+        <tr><td><code>USA</code></td><td><span class="muted">未使用</span></td><td>U.S. Environmental Protection Agency (EPA) / U.S. Customs and Border Protection (CBP) / OFAC (U.S. Treasury)</td><td>Resource Conservation and Recovery Act (RCRA, 42 U.S.C. §6901 et seq.); hazardous waste export/import requirements at 40 CFR Part 262 Subpart H; OFAC sanctions programs</td><td><code>https://www.epa.gov/hwgenerators/hazardous-waste-export-and-import-requirements</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>監査台帳 (この実行)</h2>
+    <p class="lede">append-only の意思決定 fact 列。commit / HARD hold / phase gate hold / 人間による却下がすべて同じ台帳に並びます。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>fact</th><th>op</th><th>waste-order</th><th>disposition</th><th>basis</th></tr></thead>
+      <tbody>
+        <tr class="phase-row"><td>governor-hold</td><td><code>intake</code></td><td><code>wo-1</code></td><td>hold</td><td><span class="pill warn">phase-disabled</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-1</code></td><td>hold</td><td><span class="pill hard">evidence-incomplete</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>intake</code></td><td><code>wo-1</code></td><td>commit</td><td><span class="muted" title=":id | :counterparty">2 件の引用 · :id</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-1</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/ | Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented in EU law by Regulation (EU) 2024/1157 on shipments of waste">3 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>dispatch</code></td><td><code>wo-1</code></td><td>commit</td><td><span class="muted" title="wo-1">1 件の引用 · wo-1</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>settle</code></td><td><code>wo-1</code></td><td>commit</td><td><span class="muted" title="wo-1">1 件の引用 · wo-1</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-1</code></td><td>hold</td><td><span class="pill hard">already-dispatched</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>settle</code></td><td><code>wo-1</code></td><td>hold</td><td><span class="pill hard">already-invoiced</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>verify</code></td><td><code>wo-2</code></td><td>hold</td><td><span class="pill hard">no-spec-basis</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-3</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/ | Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented in EU law by Regulation (EU) 2024/1157 on shipments of waste">3 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-3</code></td><td>hold</td><td><span class="pill hard">credit-uncleared</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-4</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/ | Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented in EU law by Regulation (EU) 2024/1157 on shipments of waste">3 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-4</code></td><td>hold</td><td><span class="pill hard">contract-missing</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-5</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/ | Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented in EU law by Regulation (EU) 2024/1157 on shipments of waste">3 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-5</code></td><td>hold</td><td><span class="pill hard">counterparty-sanctions-flag-unresolved</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-6</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/ | The USA is NOT a Party to the Basel Convention (signed 1990, never ratified by the U.S. Senate), so the Basel Article 6 PIC procedure does not itself bind a USA-destination shipment. A PARALLEL, genuinely binding consent-from-destination requirement exists instead: RCRA's own hazardous-waste import-consent regime (40 CFR §262.83 exporter notification; 40 CFR §262.84 EPA consent to import), and -- for OECD-country-to-OECD-country waste destined for recovery -- the OECD Council Decision C(2001)107/FINAL 'on the Control of Transboundary Movements of Wastes Destined for Recovery Operations', which the USA implements domestically for OECD-partner trade. I am highly confident the USA is a Basel non-Party and that RCRA requires EPA import consent; I am only moderately confident about the precise boundary between the RCRA-only channel and the OECD-Decision channel for a given shipment, and this should be independently verified before this catalog is relied on operationally.">3 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-6</code></td><td>hold</td><td><span class="pill hard">prior-informed-consent-missing</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-7</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/">2 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>dispatch</code></td><td><code>wo-7</code></td><td>commit</td><td><span class="muted" title="wo-7">1 件の引用 · wo-7</span></td></tr>
+        <tr class="commit-row"><td>committed</td><td><code>verify</code></td><td><code>wo-8</code></td><td>commit</td><td><span class="muted" title="廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸出入等の規制に関する法律 (Act on the Control of Export, Import and Others of Specified Hazardous Wastes and Other Wastes -- Japan's Basel-implementing statute, commonly referred to as the 'Basel Act' / バーゼル法) | https://www.env.go.jp/ | Basel Convention, Article 6 Prior Informed Consent (PIC) procedure, as implemented in EU law by Regulation (EU) 2024/1157 on shipments of waste">3 件の引用 · 廃棄物の処理及び清掃に関する法律 (Waste Management and Public Cleansing Act); 特定有害廃棄物等の輸…</span></td></tr>
+        <tr class="hard-row"><td>governor-hold</td><td><code>dispatch</code></td><td><code>wo-8</code></td><td>hold</td><td><span class="pill hard">prior-informed-consent-missing</span></td></tr>
+        <tr class="phase-row"><td>approval-rejected</td><td><code>settle</code></td><td><code>wo-7</code></td><td>hold</td><td><span class="pill hard">approver-rejected</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+  <section class="card">
+    <h2>出荷 / 請求レジスタ (draft, unsigned)</h2>
+    <p class="lede"><code>wastetrade.registry</code> が構築した book-of-record ドラフト。実在の計量器・税関・ERP・請求システムには一切接続しません。署名は事業者の行為であって、このアクターの行為ではありません。</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>種別</th><th>record_id</th><th>waste-order</th><th>法域</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr><td>waste-dispatch</td><td><code>JPN-DISPATCH-000000</code></td><td><code>wo-1</code></td><td><code>JPN</code></td><td><span class="ok">immutable draft</span></td></tr>
+        <tr><td>waste-dispatch</td><td><code>JPN-DISPATCH-000001</code></td><td><code>wo-7</code></td><td><code>JPN</code></td><td><span class="ok">immutable draft</span></td></tr>
+        <tr><td>waste-invoice</td><td><code>JPN-INVOICE-000000</code></td><td><code>wo-1</code></td><td><code>JPN</code></td><td><span class="ok">immutable draft</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+</main>
+<footer>
+  <p>生成: <code>clojure -M:dev:render-html</code> (<code>wastetrade.render-html</code>) · 決定論的 (タイムスタンプ・乱数なし、同じ seed に対して byte-identical) · スタイルはデジタル庁デザインシステム (DADS) のプリミティブを <code>docs/index.html</code> の vendored トークンから引用。</p>
+</footer>
+</body></html>
