@@ -278,7 +278,9 @@
        :subject (:subject th)
        :reason (:reason requested)
        :outcome (cond granted :approved rejected :rejected :else :pending)
-       :approver (or (:by granted) (:by rejected))
+       ;; `:approval-granted` carries `:by`; the rejection branch merges
+       ;; over `governor/hold-fact`, which names the operator `:actor`.
+       :approver (or (:by granted) (:by rejected) (:actor rejected))
        :effect effect
        :artifact-kind (cond (nil? artifact) "—"
                             (= effect :consent-assessment/set) "assessment payload"
@@ -493,7 +495,7 @@
           (esc confidence)))
 
 (defn- phase-row [current-phase [n {:keys [label writes auto]}]]
-  (format (str "        <tr%s><td class=\"num\">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>")
+  (format "        <tr%s><td class=\"num\">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
           (if (= n current-phase) " class=\"escalate-row\"" "")
           n (esc label)
           (if (seq writes)
@@ -613,7 +615,6 @@
         hard (hard-holds ledger)
         phase-h (phase-holds ledger)
         rejected (rejection-holds ledger)
-        rules (observed-rules ledger)
         seeded-j (into #{} (map :jurisdiction) orders)
         all-j (vec (sort (into seeded-j (keys facts/catalog))))
         cov (facts/coverage all-j)
