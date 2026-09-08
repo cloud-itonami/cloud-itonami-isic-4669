@@ -29,7 +29,7 @@
   real invoice itself (that is `wastetrade.operation`'s `:delivery/
   dispatch`/`:invoice/settle`, always human-gated -- see README
   `Actuation`)."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (defn- unsigned-certificate
   "Every certificate this actor produces is UNSIGNED -- signature is
@@ -66,7 +66,7 @@
     (throw (ex-info "waste-dispatch: jurisdiction required" {})))
   (when (< sequence 0)
     (throw (ex-info "waste-dispatch: sequence must be >= 0" {})))
-  (let [dispatch-number (str (str/upper-case jurisdiction) "-DISPATCH-" (zero-pad sequence 6))
+  (let [dispatch-number (str (str/upper jurisdiction) "-DISPATCH-" (zero-pad sequence 6))
         record {"record_id" dispatch-number
                 "kind" "waste-dispatch-draft"
                 "waste_order_id" waste-order-id
@@ -91,7 +91,7 @@
     (throw (ex-info "waste-invoice: jurisdiction required" {})))
   (when (< sequence 0)
     (throw (ex-info "waste-invoice: sequence must be >= 0" {})))
-  (let [invoice-number (str (str/upper-case jurisdiction) "-INVOICE-" (zero-pad sequence 6))
+  (let [invoice-number (str (str/upper jurisdiction) "-INVOICE-" (zero-pad sequence 6))
         record {"record_id" invoice-number
                 "kind" "waste-invoice-draft"
                 "waste_order_id" waste-order-id
