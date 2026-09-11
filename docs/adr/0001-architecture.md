@@ -301,7 +301,7 @@ discipline every prior governor's guards establish, informed by
 `wastetrade.store/Store` is implemented by both `MemStore` (atom-
 backed, default for dev/tests/demo) and `DatomicStore` (`langchain.db`-
 backed), proven to satisfy the same contract in
-`test/wastetrade/store_contract_test.clj`. The ledger stays append-only
+`test/wastetrade/store_contract_test.cljk`. The ledger stays append-only
 on every backend: which waste-order was verified for a jurisdiction with
 no official spec-basis, which counterparty had credit-uncleared / no
 contract / unverified prior informed consent / an unresolved sanctions-
@@ -428,7 +428,7 @@ discipline for mining vs. wholesale vs. smelting).
   is itself a bilateral or multilateral government act rather than a
   fact the regulated party can unilaterally obtain.
 - `MemStore` || `DatomicStore` parity is proven by
-  `test/wastetrade/store_contract_test.clj`.
+  `test/wastetrade/store_contract_test.cljk`.
 - 46 tests / 228 assertions pass; lint is clean; the demo
   (`clojure -M:dev:run`) walks one clean consent-verify + dispatch +
   invoice lifecycle, six HARD-hold scenarios (no spec-basis, credit-
