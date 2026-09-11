@@ -432,7 +432,7 @@ reviewer's benefit on an e-waste order -- never a HARD governor check.
 ## Maturity
 
 `:implemented` -- `WasteTradeAdvisor` + `Waste Trading Governor` run as
-real, tested code (`clojure -M:dev:test`: 46 tests / 228 assertions, 0
+real, tested code (`kbb -M:dev:test`: 46 tests / 228 assertions, 0
 failures; lint clean), following the SAME governed-actor architecture as
 the other prior actors across this fleet, with its own distinct,
 independently-named governor and its own direct-entity-boolean waste-

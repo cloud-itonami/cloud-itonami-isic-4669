@@ -10,9 +10,9 @@ informed-consent / sanctions-screening checks live directly in
 `wastetrade.governor`.
 
 ```bash
-clojure -M:dev:test
-clojure -M:lint
-clojure -M:dev:run    # demo driver
+kbb -M:dev:test
+kbb -M:lint
+kbb -M:dev:run    # demo driver
 ```
 
 ## Rules

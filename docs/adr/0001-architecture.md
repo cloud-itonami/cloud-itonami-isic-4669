@@ -430,7 +430,7 @@ discipline for mining vs. wholesale vs. smelting).
 - `MemStore` || `DatomicStore` parity is proven by
   `test/wastetrade/store_contract_test.cljk`.
 - 46 tests / 228 assertions pass; lint is clean; the demo
-  (`clojure -M:dev:run`) walks one clean consent-verify + dispatch +
+  (`kbb -M:dev:run`) walks one clean consent-verify + dispatch +
   invoice lifecycle, six HARD-hold scenarios (no spec-basis, credit-
   uncleared, contract-missing, prior-informed-consent-missing, sanctions,
   double dispatch, double invoice), PLUS a control scenario (sorted
