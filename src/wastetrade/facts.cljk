@@ -120,7 +120,7 @@
   regime (no PIC required). Sorted, clean, single-material scrap is the
   paradigm case: `wastetrade.governor`'s `prior-informed-consent-
   missing-violations` is a genuine NO-OP for these -- see
-  `test/wastetrade/governor_contract_test.clj`'s
+  `test/wastetrade/governor_contract_test.cljk`'s
   `prior-informed-consent-check-is-a-no-op-for-green-list-waste`."
   #{"ferrous scrap metal (sorted, HS 7204)"
     "non-ferrous scrap metal (sorted, clean)"

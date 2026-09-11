@@ -110,7 +110,7 @@ autonomous, at any phase, by construction.** Two independent layers
 enforce this (`wastetrade.governor`'s `:delivery/dispatch`/
 `:invoice/settle` high-stakes gate and `wastetrade.phase`'s phase table,
 which never puts either op in any phase's `:auto` set) -- see
-`wastetrade.phase`'s docstring and `test/wastetrade/phase_test.clj`'s
+`wastetrade.phase`'s docstring and `test/wastetrade/phase_test.cljk`'s
 `delivery-dispatch-never-auto-at-any-phase`/
 `invoice-settle-never-auto-at-any-phase`. The actor may draft, check and
 recommend; a human trading supervisor is always the one who actually
@@ -187,7 +187,7 @@ sibling's (jurisdiction-unconditional) and textile-wholesale sibling's
 green-list / non-hazardous waste-stream type (sorted ferrous/non-ferrous
 scrap metal, sorted single-resin plastics, sorted paper/cardboard,
 sorted clean textile waste, ...);
-`test/wastetrade/governor_contract_test.clj`'s
+`test/wastetrade/governor_contract_test.cljk`'s
 `prior-informed-consent-check-is-a-no-op-for-green-list-waste` proves
 this directly with a sorted-ferrous-scrap order carrying the SAME
 undocumented PIC facts as a HELD hazardous-waste order.
@@ -248,14 +248,14 @@ dmn/bpmn/audit-ledger stack.
 
 | File | Role |
 |---|---|
-| `src/wastetrade/store.cljc` | **Store** protocol -- `MemStore` ‖ `DatomicStore` (`langchain.db`) + append-only audit ledger + dispatch AND invoice history (dual history). The double-actuation guard checks dedicated `:dispatched?`/`:invoiced?` booleans rather than a `:status` value |
-| `src/wastetrade/registry.cljc` | Dispatch/invoice draft records (record construction only -- the Waste Trading Governor's checks are direct entity booleans, so there are no pure range-check functions to host here) |
-| `src/wastetrade/facts.cljc` | Per-EXPORTING-jurisdiction customs/waste-export catalog with an official spec-basis citation per entry, PLUS a separate `consent-basis` catalog keyed by DESTINATION country (Basel Convention Article 6 PIC for Parties, RCRA import-consent for the seeded USA non-Party), the hazardous/green-list waste-stream classification, and honest coverage reporting |
-| `src/wastetrade/wastetradeadvisor.cljc` | **WasteTradeAdvisor** -- `mock-advisor` ‖ `llm-advisor`; intake/consent-verification/dispatch/invoice proposals |
-| `src/wastetrade/governor.cljc` | **Waste Trading Governor** -- 6 HARD checks (spec-basis · evidence-incomplete · credit-uncleared · contract-missing · prior-informed-consent-missing · counterparty-sanctions-flag-unresolved) + 2 double-actuation guards + 1 soft (confidence/actuation gate) |
-| `src/wastetrade/phase.cljc` | **Phase 0→3** -- read-only → assisted intake → assisted verify → supervised (dispatch/invoice always human; order intake is the ONLY auto-eligible op, no direct capital risk) |
-| `src/wastetrade/operation.cljc` | **OperationActor** -- langgraph StateGraph |
-| `src/wastetrade/sim.cljc` | demo driver |
+| `src/wastetrade/store.cljk` | **Store** protocol -- `MemStore` ‖ `DatomicStore` (`langchain.db`) + append-only audit ledger + dispatch AND invoice history (dual history). The double-actuation guard checks dedicated `:dispatched?`/`:invoiced?` booleans rather than a `:status` value |
+| `src/wastetrade/registry.cljk` | Dispatch/invoice draft records (record construction only -- the Waste Trading Governor's checks are direct entity booleans, so there are no pure range-check functions to host here) |
+| `src/wastetrade/facts.cljk` | Per-EXPORTING-jurisdiction customs/waste-export catalog with an official spec-basis citation per entry, PLUS a separate `consent-basis` catalog keyed by DESTINATION country (Basel Convention Article 6 PIC for Parties, RCRA import-consent for the seeded USA non-Party), the hazardous/green-list waste-stream classification, and honest coverage reporting |
+| `src/wastetrade/wastetradeadvisor.cljk` | **WasteTradeAdvisor** -- `mock-advisor` ‖ `llm-advisor`; intake/consent-verification/dispatch/invoice proposals |
+| `src/wastetrade/governor.cljk` | **Waste Trading Governor** -- 6 HARD checks (spec-basis · evidence-incomplete · credit-uncleared · contract-missing · prior-informed-consent-missing · counterparty-sanctions-flag-unresolved) + 2 double-actuation guards + 1 soft (confidence/actuation gate) |
+| `src/wastetrade/phase.cljk` | **Phase 0→3** -- read-only → assisted intake → assisted verify → supervised (dispatch/invoice always human; order intake is the ONLY auto-eligible op, no direct capital risk) |
+| `src/wastetrade/operation.cljk` | **OperationActor** -- langgraph StateGraph |
+| `src/wastetrade/sim.cljk` | demo driver |
 | `test/wastetrade/*_test.clj` | governor contract · phase invariants · store parity · registry conformance · facts coverage |
 
 ## Business-process coverage (honest)

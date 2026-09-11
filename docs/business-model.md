@@ -94,7 +94,7 @@ Products N.E.C., ISIC 4669) and to the three `:social-impact` tags in
 `:transparency`).
 
 This is the rule the companion contract test
-(`test/wastetrade/governor_contract_test.clj`) encodes end-to-end: the
+(`test/wastetrade/governor_contract_test.cljk`) encodes end-to-end: the
 WasteTradeAdvisor never dispatches waste/scrap across a border to a
 counterparty or settles an invoice the Waste Trading Governor would
 reject, `:delivery/dispatch` and `:invoice/settle` NEVER auto-commit at
