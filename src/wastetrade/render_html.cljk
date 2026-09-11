@@ -13,7 +13,7 @@
   run state. Nothing is typed in by hand.
 
   The scenario below is an EXTENSION of this repo's own demo driver
-  (`wastetrade.sim`, `clojure -M:dev:run`, run and read BEFORE this file
+  (`wastetrade.sim`, `kbb -M:dev:run`, run and read BEFORE this file
   was written so the seeded ids `wo-1`..`wo-8` and their real outputs
   were known). It adds three probes `sim` does not perform:
 
@@ -44,7 +44,7 @@
   the `--hig-*` contract rather than the `--color-*` primitives this
   console (and `docs/index.html`) actually reference.
 
-  Usage: `clojure -M:dev:render-html [out-file]`
+  Usage: `kbb -M:dev:render-html [out-file]`
   (default `docs/samples/operator-console.html`)."
   (:require [kotoba.lang.text :as str]
             [langgraph.graph :as g]
@@ -744,7 +744,7 @@
 
      "</main>\n"
      "<footer>\n"
-     "  <p>生成: <code>clojure -M:dev:render-html</code> "
+     "  <p>生成: <code>kbb -M:dev:render-html</code> "
      "(<code>wastetrade.render-html</code>) · "
      "決定論的 (タイムスタンプ・乱数なし、同じ seed に対して byte-identical) · "
      "スタイルはデジタル庁デザインシステム (DADS) のプリミティブを "

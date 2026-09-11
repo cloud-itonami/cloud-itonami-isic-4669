@@ -1,5 +1,5 @@
 (ns wastetrade.sim
-  "Demo driver -- `clojure -M:dev:run`. Walks a clean hazardous-waste
+  "Demo driver -- `kbb -M:dev:run`. Walks a clean hazardous-waste
   order through intake -> consent verification -> waste/scrap dispatch
   (escalate/approve/commit) -> invoice settlement (escalate/approve/
   commit), then shows a NON-hazardous / green-list waste order that does
