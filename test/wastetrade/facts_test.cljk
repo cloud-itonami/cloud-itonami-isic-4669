@@ -1,6 +1,6 @@
 (ns wastetrade.facts-test
   (:require [kotoba.test :refer [deftest is]]
-            [clojure.set :as set]
+            [kotoba.lang.coll :as set]
             [wastetrade.facts :as facts]))
 
 (deftest jpn-has-a-spec-basis
