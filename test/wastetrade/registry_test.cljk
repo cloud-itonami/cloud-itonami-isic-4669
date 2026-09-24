@@ -1,5 +1,5 @@
 (ns wastetrade.registry-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [wastetrade.registry :as r]))
 
 ;; The waste-trading domain checks (credit-clearance, contract-on-file,
