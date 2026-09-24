@@ -1,0 +1,33 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README "Robotics premise": an autonomous sorting/baling robot stages the
+;; outbound waste and scrap stream and an autonomous loader performs the
+;; outbound loadout at the wholesaler yard (ISIC 4669). The physical work: a
+;; sorting arm picking scrap pieces off the belt, and the loader driving a
+;; bucket of shredded scrap up the loading ramp to the trailer.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-4669"
+ :cases
+ [{:id :sort-scrap-piece
+   :kind :manipulator
+   :procedure "sorting arm with a gripper picks a scrap piece off the sorting belt and drops it into the grade bunker in 1.5 s"
+   :params {:l1-m 0.90 :l2-m 0.80 :m1-kg 20.0 :m2-kg 12.0
+            :from [1.10 -0.20] :to [0.50 0.90] :duration-s 1.5 :steps 500}
+   :sweep {:param :payload-kg :values [1.0 3.0 5.0 8.0 12.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 450.0 :basis "estimate: continuous shoulder torque of a ~15 kg-payload heavy sorting arm with a 1.7 m reach"}
+   :boundary {:lo 0.2 :hi 60.0}}
+  {:id :loader-up-loading-ramp
+   :kind :transport
+   :procedure "loader drives a bucket of shredded scrap 15 m up the 8-degree loading ramp to the trailer's side and stops there"
+   :params {:mass-kg 6000.0 :distance-m 15.0 :v-max-mps 2.0 :a-max-mps2 0.5 :brake-decel-mps2 1.0
+            :drive-force-n 20000.0 :crr 0.03 :cog-height-m 1.00 :payload-cog-height-m 1.50
+            :support-half-length-m 1.20 :slope-deg 8.0 :max-time-s 1200.0}
+   :sweep {:param :payload-kg :values [1000.0 2500.0 4000.0 5000.0 5500.0]}
+   :quantity :cycle-time-s
+   :limit {:max 15.0 :basis "estimate: the ramp leg's share of the loader's load-out cycle that keeps a trailer loaded inside its slot"}
+   :boundary {:lo 200.0 :hi 6000.0}}]}
